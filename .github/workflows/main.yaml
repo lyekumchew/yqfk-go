@@ -16,3 +16,11 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           dockerfile: ${{ github.workspace }}/Dockerfile
           workdir: ${{ github.workspace }}
+      - name: Docker Login
+        run: docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Docker Tag Image
+        run: docker tag lyekumchew/yqfk-go docker.pkg.github.com/$GITHUB_REPOSITORY/yqfk-go:latest
+      - name: Publish to Github Packages
+        run: docker push docker.pkg.github.com/$GITHUB_REPOSITORY/yqfk-go:latest
