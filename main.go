@@ -34,7 +34,7 @@ func main() {
 	flag.Parse()
 
 	c := cron.New()
-	_, err := c.AddFunc("CRON_TZ=Asia/Shanghai 10 0 * * *", func() { run() })
+	_, err := c.AddFunc("CRON_TZ=Asia/Shanghai 10 6 * * *", func() { run() })
 	if err != nil {
 		serviceLogger(err.Error(), 1)
 	}
