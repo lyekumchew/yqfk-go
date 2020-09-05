@@ -1,6 +1,6 @@
 name: main
 
-on: [push]
+on: [ push ]
 
 jobs:
   build:
@@ -8,19 +8,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@master
-      - name: Build & Publish to Registry
-        uses: elgohr/Publish-Docker-Github-Action@master
-        with:
-          name: lyekumchew/yqfk-go
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          dockerfile: ${{ github.workspace }}/Dockerfile
-          workdir: ${{ github.workspace }}
       - name: Docker Login
-        run: docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - name: Docker Tag Image
-        run: docker tag lyekumchew/yqfk-go docker.pkg.github.com/$GITHUB_REPOSITORY/yqfk-go:latest
+        run:  echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+      - name: Docker Build Image
+        run: docker build -t ghcr.io/$GITHUB_ACTOR/yqfk:latest .
       - name: Publish to Github Packages
-        run: docker push docker.pkg.github.com/$GITHUB_REPOSITORY/yqfk-go:latest
+        run: docker push ghcr.io/$GITHUB_ACTOR/yqfk:latest
