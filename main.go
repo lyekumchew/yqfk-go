@@ -20,7 +20,7 @@ import (
 
 const (
 	homeUrl = "https://cas.dgut.edu.cn/home/Oauth/getToken/appid/illnessProtectionHome/state/home.html"
-	yqfkUrl = "http://yqfk.dgut.edu.cn/home/base_info/"
+	yqfkUrl = "https://yqfk.dgut.edu.cn/home/base_info/"
 	scUrl   = "https://sc.ftqq.com/"
 )
 
@@ -151,8 +151,13 @@ func postForm(token string) error {
 	re := regexp.MustCompile(`"info":(.*)}`)
 	res := re.FindAllStringSubmatch(string(contents), -1)
 	info := res[0][1]
-	if info == "" {
+	if info == "" || info == "[]" {
 		return errors.New("获取个人信息失败")
+	}
+	// 已经打卡
+	if strings.Contains(info, "成功") || strings.Contains(info, "已提交") {
+		serviceLogger("今日已提交，不进行任务处理", 2)
+		return nil
 	}
 	req, _ = http.NewRequest("POST", yqfkUrl+"addBaseInfo", strings.NewReader(info))
 	req.Header.Set("authorization", "Bearer "+token)
